@@ -146,6 +146,7 @@ float parallelFilterFirst(int data_len, unsigned int *input_array, unsigned int 
     //********************
     if (threads != -1)
     {
+        printf("setting the number of threads to %d\n", threads);
         omp_set_num_threads(threads);
     }
 
@@ -175,7 +176,7 @@ float parallelFilterFirst(int data_len, unsigned int *input_array, unsigned int 
 }
 
 /* Function to apply the filter with the filter list in the inside loop */
-float parallelDataFirst(int data_len, unsigned int *input_array, unsigned int *output_array, int filter_len, unsigned int *filter_list, int threads = 1)
+float parallelDataFirst(int data_len, unsigned int *input_array, unsigned int *output_array, int filter_len, unsigned int *filter_list, int threads = -1)
 {
     /* Variables for timing */
     struct timeval ta, tb, tresult;
@@ -215,7 +216,7 @@ float parallelDataFirst(int data_len, unsigned int *input_array, unsigned int *o
 }
 
 /* version of parallelDataFirst that unrolls the outer loop 8 times */
-void parallelDataFirstUnrolledData(int data_len, unsigned int *input_array, unsigned int *output_array, int filter_len, unsigned int *filter_list, int threads = -1)
+float parallelDataFirstUnrolledData(int data_len, unsigned int *input_array, unsigned int *output_array, int filter_len, unsigned int *filter_list, int threads = -1)
 {
     /* Variables for timing */
     struct timeval ta, tb, tresult;
@@ -273,12 +274,13 @@ void parallelDataFirstUnrolledData(int data_len, unsigned int *input_array, unsi
     gettimeofday(&tb, NULL);
 
     timeval_subtract(&tresult, &tb, &ta);
-    printf("DFUD data first unrolled data took %f seconds \n", (double)tresult.tv_sec + (double)tresult.tv_usec / 1000000);
-    return;
+    float total_time = (double)tresult.tv_sec + (double)tresult.tv_usec / 1000000;
+    printf("DFUD data first unrolled data took %f seconds \n", total_time);
+    return total_time;
 }
 
 /* version of parallelFilterFirst that unrolls the outer loop 8 times */
-void parallelFilterFirstUnrolledFilter(int data_len, unsigned int *input_array, unsigned int *output_array, int filter_len, unsigned int *filter_list, int threads = -1)
+float parallelFilterFirstUnrolledFilter(int data_len, unsigned int *input_array, unsigned int *output_array, int filter_len, unsigned int *filter_list, int threads = -1)
 {
     /* Variables for timing */
     struct timeval ta, tb, tresult;
@@ -337,12 +339,13 @@ void parallelFilterFirstUnrolledFilter(int data_len, unsigned int *input_array, 
 
     timeval_subtract(&tresult, &tb, &ta);
 
+    float total_time = (double)tresult.tv_sec + (double)tresult.tv_usec / 1000000;
     printf("FFUF filter first unrolled filter took %f seconds \n", (double)tresult.tv_sec + (double)tresult.tv_usec / 1000000);
-    return;
+    return total_time;
 }
 
 /* version of parallelDataFirst that unrolls the inner loop 8 times */
-void parallelDataFirstUnrolledFilter(int data_len, unsigned int *input_array, unsigned int *output_array, int filter_len, unsigned int *filter_list)
+float parallelDataFirstUnrolledFilter(int data_len, unsigned int *input_array, unsigned int *output_array, int filter_len, unsigned int *filter_list, int threads = -1)
 {
     /* Variables for timing */
     struct timeval ta, tb, tresult;
@@ -351,17 +354,64 @@ void parallelDataFirstUnrolledFilter(int data_len, unsigned int *input_array, un
     gettimeofday(&ta, NULL);
 
     // Your code here.
+    if (threads != -1)
+    {
+        omp_set_num_threads(threads);
+    }
+#pragma omp parallel for
+    for (int x = 0; x < data_len; x++)
+    {
+        for (int y = 0; y < filter_len; y = y + 8)
+        {
+            /* for all elements in the data */
+            // Unrolling
+            if (input_array[x] == filter_list[y + 0])
+            {
+                output_array[x] = input_array[x];
+            }
+            if (input_array[x] == filter_list[y + 1])
+            {
+                output_array[x] = input_array[x];
+            }
+            if (input_array[x] == filter_list[y + 2])
+            {
+                output_array[x] = input_array[x];
+            }
+            if (input_array[x] == filter_list[y + 3])
+            {
+                output_array[x] = input_array[x];
+            }
+            if (input_array[x] == filter_list[y + 4])
+            {
+                output_array[x] = input_array[x];
+            }
+            if (input_array[x] == filter_list[y + 5])
+            {
+                output_array[x] = input_array[x];
+            }
+            if (input_array[x] == filter_list[y + 6])
+            {
+                output_array[x] = input_array[x];
+            }
+            if (input_array[x] == filter_list[y + 7])
+            {
+                output_array[x] = input_array[x];
+            }
+        }
+    }
 
     /* get initial time */
     gettimeofday(&tb, NULL);
 
     timeval_subtract(&tresult, &tb, &ta);
+
+    float total_time = (double)tresult.tv_sec + (double)tresult.tv_usec / 1000000;
     printf("DFUF data first unrolled filter took %f seconds \n", (double)tresult.tv_sec + (double)tresult.tv_usec / 1000000);
-    return;
+    return total_time;
 }
 
 /* version of parallelFilterFirst that unrolls the inner loop 8 times */
-void parallelFilterFirstUnrolledData(int data_len, unsigned int *input_array, unsigned int *output_array, int filter_len, unsigned int *filter_list, int threads = -1)
+float parallelFilterFirstUnrolledData(int data_len, unsigned int *input_array, unsigned int *output_array, int filter_len, unsigned int *filter_list, int threads = -1)
 {
     /* Variables for timing */
     struct timeval ta, tb, tresult;
@@ -420,8 +470,9 @@ void parallelFilterFirstUnrolledData(int data_len, unsigned int *input_array, un
 
     timeval_subtract(&tresult, &tb, &ta);
 
+    float total_time = (double)tresult.tv_sec + (double)tresult.tv_usec / 1000000;
     printf("FFUD filter first unrolled data took %f seconds \n", (double)tresult.tv_sec + (double)tresult.tv_usec / 1000000);
-    return;
+    return total_time;
 }
 
 void checkData(unsigned int *serialarray, unsigned int *parallelarray)
@@ -455,7 +506,7 @@ void experiment1(int total_iterations, unsigned int *input_array, unsigned int *
     {
         std::cout << "Executing run " << run << std::endl;
 
-        for (int filter_len = 8; filter_len <= 256; filter_len *= 2)
+        for (int filter_len = 32; filter_len <= 64; filter_len *= 2)
         {
             printf("%sCollecting timing data for filter of length %d%s\n", OKBLUE, filter_len, ENDC);
 
@@ -495,20 +546,36 @@ void experiment1(int total_iterations, unsigned int *input_array, unsigned int *
             //********************
             // Unrolled for loops
 
-            //    parallelDataFirstUnrolledFilter ( DATA_LEN, input_array, output_array, filter_len, filter_list );
-            //    checkData ( serial_array, output_array );
-            //    memset ( output_array, 0, DATA_LEN );
-
-            parallelFilterFirstUnrolledFilter(DATA_LEN, input_array, output_array, filter_len, filter_list);
+            exec_time = parallelDataFirstUnrolledFilter(DATA_LEN, input_array, output_array, filter_len, filter_list);
             checkData(serial_array, output_array);
+            sprintf(data, "%d,%0.6f,%d,DFUF,parallel,12", run, exec_time, filter_len);
+            results_file << data << std::endl;
+
+            memset(data, 0, sizeof(data));
             memset(output_array, 0, DATA_LEN);
 
-            parallelDataFirstUnrolledData(DATA_LEN, input_array, output_array, filter_len, filter_list);
+            exec_time = parallelFilterFirstUnrolledFilter(DATA_LEN, input_array, output_array, filter_len, filter_list);
             checkData(serial_array, output_array);
+
+            sprintf(data, "%d,%0.6f,%d,FFUF,parallel,12", run, exec_time, filter_len);
+            results_file << data << std::endl;
+            memset(data, 0, sizeof(data));
             memset(output_array, 0, DATA_LEN);
 
-            parallelFilterFirstUnrolledData(DATA_LEN, input_array, output_array, filter_len, filter_list);
+            exec_time = parallelDataFirstUnrolledData(DATA_LEN, input_array, output_array, filter_len, filter_list);
             checkData(serial_array, output_array);
+
+            sprintf(data, "%d,%0.6f,%d,DFUD,parallel,12", run, exec_time, filter_len);
+            results_file << data << std::endl;
+            memset(data, 0, sizeof(data));
+            memset(output_array, 0, DATA_LEN);
+
+            exec_time = parallelFilterFirstUnrolledData(DATA_LEN, input_array, output_array, filter_len, filter_list);
+            checkData(serial_array, output_array);
+
+            sprintf(data, "%d,%0.6f,%d,FFUD,parallel,12", run, exec_time, filter_len);
+            results_file << data << std::endl;
+            memset(data, 0, sizeof(data));
             memset(output_array, 0, DATA_LEN);
 
             //********************
@@ -569,6 +636,69 @@ void experiment2(int total_iterations, unsigned int *input_array, unsigned int *
     }
 }
 
+void experiment3(int total_iterations, unsigned int *input_array, unsigned int *output_array, unsigned int *serial_array, unsigned int *filter_list)
+{
+
+    //*********************************************************
+    // Experiment 3: Loop unrolling
+    //*********************************************************
+    float exec_time;
+    char data[100];
+
+    int total_runs = total_iterations;
+    std::string header = "run,time,filter_size,type,exec_type,threads\n";
+    std::ofstream results_file("./results/experiment3.csv");
+    results_file << header;
+    printf("Experiment 3 headers: %s\n", header.c_str());
+
+    int thread_numbers = 8;
+    int filter_len = 256;
+    // int run = 1;
+
+    // Serial execution
+    printf("Running algorithm to check againts\n");
+    exec_time = parallelDataFirst(DATA_LEN, input_array, serial_array, filter_len, filter_list);
+    memset(data, 0, sizeof(data));
+    memset(output_array, 0, DATA_LEN);
+
+    for (int run = 0; run < total_runs; run++)
+    {
+        printf("%sIteration %d%s\n", OKBLUE, run, ENDC);
+
+        exec_time = parallelDataFirstUnrolledFilter(DATA_LEN, input_array, output_array, filter_len, filter_list);
+        checkData(serial_array, output_array);
+        sprintf(data, "%d,%0.6f,%d,DFUF,parallel,%d", run, exec_time, filter_len, thread_numbers);
+        results_file << data << std::endl;
+
+        memset(data, 0, sizeof(data));
+        memset(output_array, 0, DATA_LEN);
+
+        exec_time = parallelFilterFirstUnrolledFilter(DATA_LEN, input_array, output_array, filter_len, filter_list);
+        checkData(serial_array, output_array);
+
+        sprintf(data, "%d,%0.6f,%d,FFUF,parallel,%d", run, exec_time, filter_len, thread_numbers);
+        results_file << data << std::endl;
+        memset(data, 0, sizeof(data));
+        memset(output_array, 0, DATA_LEN);
+
+        exec_time = parallelDataFirstUnrolledData(DATA_LEN, input_array, output_array, filter_len, filter_list);
+        checkData(serial_array, output_array);
+
+        sprintf(data, "%d,%0.6f,%d,DFUD,parallel,%d", run, exec_time, filter_len, thread_numbers);
+        results_file << data << std::endl;
+        memset(data, 0, sizeof(data));
+        memset(output_array, 0, DATA_LEN);
+
+        exec_time = parallelFilterFirstUnrolledData(DATA_LEN, input_array, output_array, filter_len, filter_list);
+        checkData(serial_array, output_array);
+
+        sprintf(data, "%d,%0.6f,%d,FFUD,parallel,%d", run, exec_time, filter_len, thread_numbers);
+        results_file << data << std::endl;
+        memset(data, 0, sizeof(data));
+        memset(output_array, 0, DATA_LEN);
+    }
+}
+
 int main(int argc, char **argv)
 {
     /* loop variables */
@@ -603,7 +733,7 @@ int main(int argc, char **argv)
     //*********************************************************
     // Experiment 1: Execute at a variety of filter lengths
     //*********************************************************
-    experiment1(1, input_array, output_array, serial_array, filter_list);
+    // experiment1(1, input_array, output_array, serial_array, filter_list);
 
     //*********************************************************
     // Experiment 2: Loop parallel execution
@@ -613,4 +743,5 @@ int main(int argc, char **argv)
     //*********************************************************
     // Experiment 2: Loop unrolling
     //*********************************************************
+    experiment3(20, input_array, output_array, serial_array, filter_list);
 }

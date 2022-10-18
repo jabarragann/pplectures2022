@@ -1,4 +1,8 @@
 // Implementation of a subset of the java.util.concurrent.BlockingQueue interface 
+
+// Implementation inspired from 
+// https://www.happycoders.eu/algorithms/implement-queue-using-array/
+
 public class BlockingQueue {
 
     // queue and dequeue string data -- not objects -- makes it easier to read
@@ -23,7 +27,8 @@ public class BlockingQueue {
         int slot;
 
         // wait and don't add if the queue is full
-        if (this.qlen==this.limit)
+        // if (this.qlen==this.limit)
+        while (this.qlen==this.limit)
         {
             wait();
         } 
@@ -54,7 +59,8 @@ public class BlockingQueue {
         int slot;
 
         // don't take from an empty queue
-        if (this.qlen==0)
+        // if (this.qlen==0)
+        while(this.qlen==0)
         {
             wait();
         } 

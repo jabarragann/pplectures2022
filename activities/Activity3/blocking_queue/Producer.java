@@ -26,7 +26,7 @@ public class Producer implements Runnable {
                 System.out.println("put " + Integer.toString(i));
 
                 // sleep can slow things down to make output understandable
-                Thread.sleep(1000);
+                // Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
 

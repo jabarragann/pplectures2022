@@ -24,7 +24,7 @@ public class Consumer implements Runnable{
                 System.out.println("take " + item);
 
                 // sleep can slow things down to make output understandable
-                Thread.sleep(1000);
+                // Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -10,29 +10,31 @@ public class BlockingQueueExample {
 //        BlockingQueue queue = new BlockingQueue(1024);
 
         // Small example that creates one producer and one consumer
-//          Producer producer = new Producer(queue, 4);
-//          Consumer consumer = new Consumer(queue, 4);
+        Producer producer = new Producer(queue, 8);
+        Consumer consumer = new Consumer(queue, 8);
 
         // medium example that wraps the queue
-        Producer producer = new Producer(queue, 20);
-        Consumer consumer = new Consumer(queue, 20);
+        // Producer producer = new Producer(queue, 20);
+        // Consumer consumer = new Consumer(queue, 20);
 
         // big example 
 //        Producer producer = new Producer(queue, 1000);
 //        Consumer consumer = new Consumer(queue, 1000);
 
         // two threads is a minimal example
-        new Thread(producer).start();
-        new Thread(consumer).start();
+        // new Thread(producer).start();
+        // new Thread(producer).start();
+        // new Thread(consumer).start();
+        // new Thread(consumer).start();
 
         // more threads is more fun 
-//        new Thread(producer).start();
-//        new Thread(consumer).start();
-//        new Thread(producer).start();
-//        new Thread(consumer).start();
-//        new Thread(producer).start();
-//        new Thread(consumer).start();
-//        new Thread(producer).start();
-//        new Thread(consumer).start();
+       new Thread(producer).start();
+       new Thread(consumer).start();
+       new Thread(producer).start();
+       new Thread(consumer).start();
+       new Thread(producer).start();
+       new Thread(consumer).start();
+       new Thread(producer).start();
+       new Thread(consumer).start();
     }
 }

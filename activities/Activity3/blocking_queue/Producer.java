@@ -23,10 +23,10 @@ public class Producer implements Runnable {
                 queue.put(Integer.toString(i));
 
                 // output if your debugging
-                System.out.println("put" + Integer.toString(i));
+                System.out.println("put " + Integer.toString(i));
 
                 // sleep can slow things down to make output understandable
-//                Thread.sleep(1000);
+                Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
 

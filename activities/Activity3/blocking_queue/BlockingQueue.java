@@ -7,6 +7,7 @@ public class BlockingQueue {
     // queue metadata  
     private int limit = 10;
     private int head = 0;
+    private int tail = 0;
     private int qlen = 0;
 
     // Create an array of strings as the queue
@@ -22,13 +23,25 @@ public class BlockingQueue {
         int slot;
 
         // wait and don't add if the queue is full
-        // TODO
+        if (this.qlen==this.limit)
+        {
+            wait();
+        } 
 
         // get slot and update head and length
-        // TODO 
+        slot = this.tail;
+        this.tail = this.tail + 1;
+        if (this.tail == this.limit) //Circular indexes
+        {
+            this.tail = 0;
+        } 
+        this.qlen += 1; 
 
         // notify takers if this is the first item in queue
-        // TODO
+        if(this.qlen == 1) 
+        {
+            notifyAll();
+        }
 
         // add the item
         this.queue[slot] = item;
@@ -38,21 +51,33 @@ public class BlockingQueue {
     throws InterruptedException {
 
         // slot to be taken and deleted
-        int tail;
+        int slot;
 
         // don't take from an empty queue
-        // TODO 
+        if (this.qlen==0)
+        {
+            wait();
+        } 
 
         //get slot 
-        // TODO 
+        slot = this.head;
+        this.head= this.head+ 1;
+        if (this.head== this.limit) //Circular indexes
+        {
+            this.head= 0;
+        } 
 
         // if taking from a full queue, notify putters
-        
+        if(this.qlen == this.limit)
+        {
+            notifyAll();
+        }
         // update queue length
+        this.qlen -= 1; 
 
         // take the item and dereference pointer for garbage collection
-        String ret_obj = this.queue[tail];
-        queue[tail]=null;
+        String ret_obj = this.queue[slot];
+        queue[slot]=null;
 
         // return item
         return ret_obj;
